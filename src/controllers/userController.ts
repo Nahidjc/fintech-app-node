@@ -1,6 +1,6 @@
 import User from "../model/userModel";
 import { Response, Request } from "express";
-import { create, findOne } from "../utils/databaseService";
+import { createData, findOne } from "../utils/databaseService";
 import { generateUniqueAccountNumber } from "../utils/userUtils";
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
@@ -57,7 +57,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       userType,
       profilePic: result.url
     });
-    const userInfo = await create(User, userData);
+    const userInfo = await createData(User, userData);
     fs.unlink(file.path, function (err: any) {
       if (err) throw err;
     });
