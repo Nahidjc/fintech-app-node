@@ -1,5 +1,5 @@
-export const JWT = {
-    DEVICE_SECRET: 'myjwtdevicesecret',
+export const JWT_SECRET = {
+    USER_SECRET: 'myjwtdevicesecret',
     ADMIN_SECRET: 'myjwtadminsecret',
     EXPIRES_IN: 10000,
   };
