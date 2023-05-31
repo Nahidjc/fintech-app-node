@@ -56,6 +56,7 @@ const schema: Schema<IUser> = new Schema<IUser>(
       min: 0,
       max: 9999999,
       required: false,
+      default: 0,
       unique: false
     },
     accountNumber: {
