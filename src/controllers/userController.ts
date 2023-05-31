@@ -3,7 +3,7 @@ import { Response, Request } from "express";
 import { create, findOne } from "../utils/databaseService";
 import { generateUniqueAccountNumber } from "../utils/userUtils";
 const bcrypt = require("bcrypt");
-var cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 cloudinary.config({
   cloud_name: "dptowkzy5",
