@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
-
-const uri: string =
-  process.env.NODE_ENV === "test"
-    ? process.env.DB_TEST_URL!
-    : process.env.DB_URL!;
+import { DB_URL, DB_TEST_URL, NODE_ENV } from "./variables";
+const uri: string = NODE_ENV === "test" ? DB_TEST_URL! : DB_URL!;
 mongoose.set("strictQuery", false);
 mongoose.connect(uri);
 const db = mongoose.connection;
