@@ -61,8 +61,7 @@ const schema: Schema<IUser> = new Schema<IUser>(
     },
     accountNumber: {
       type: Number,
-      min: 10,
-      max: 10,
+      maxlength: 10,
       unique: true,
       required: false
     },

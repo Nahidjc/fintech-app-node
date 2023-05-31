@@ -30,16 +30,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     const accountNumber = await generateUniqueAccountNumber();
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const userData: {
-      accountNumber?: number;
-      profilePic?: string;
-      mobileNo?: string;
-      username?: string;
-      password?: string;
-      email?: string;
-      name?: string;
-      userType: number;
-    } = {
+    const userData = new User({
       accountNumber,
       mobileNo,
       username,
@@ -47,7 +38,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       email,
       name,
       userType
-    };
+    });
     const userInfo = await create(User, userData);
     res.send({
       userInfo,

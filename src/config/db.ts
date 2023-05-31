@@ -6,7 +6,7 @@ mongoose.connect(uri);
 const db = mongoose.connection;
 
 db.once("open", () => {
-  console.log("Connection Successful");
+  console.log("Database Connection Successful");
 });
 
 db.on("error", () => {
