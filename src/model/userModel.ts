@@ -89,7 +89,7 @@ schema.pre<IUser>("save", async function (next) {
   this.isDeleted = false;
   this.isActive = true;
   if (this.password) {
-    this.password = await bcrypt.hash(this.password, 8);
+    this.password = await bcrypt.hash(this.password, 9);
   }
   next();
 });
