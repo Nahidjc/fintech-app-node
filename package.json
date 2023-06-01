@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./build/app.js",
     "dev": "nodemon  ./src/app.ts",
-    "build": "ts-node-dev --respawn src/app.ts",
+    "build": "tsc",
     "test": "jest --detectOpenHandles",
     "test:cover": "jest --coverage"
   },
