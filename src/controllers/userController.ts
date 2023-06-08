@@ -1,6 +1,6 @@
 import User from "../model/userModel";
 import { Response, Request } from "express";
-import { createData, findOne } from "../utils/databaseService";
+import { createData, findOne, updateOne } from "../utils/databaseService";
 import {
   createAccessToken,
   generateUniqueAccountNumber,
@@ -16,11 +16,6 @@ cloudinary.config({
 });
 
 export const register = async (req: Request, res: Response): Promise<any> => {
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    overwrite: true
-  };
   try {
     const {
       username,
@@ -37,11 +32,6 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       userType: number;
       mobileNo: string;
     } = req.body;
-    const file = await req.file;
-    const result = await cloudinary.uploader.upload(file.path, options);
-    fs.unlink(file.path, function (err: any) {
-      if (err) throw err;
-    });
     if (!username || !password || !email || !name || !userType || !mobileNo) {
       return res.status(400).json({ message: "Required fields are missing." });
     }
@@ -57,8 +47,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       password,
       email,
       name,
-      userType,
-      profilePic: result.url
+      userType
     });
     const userInfo = await createData(User, userData);
     res.send({
@@ -104,6 +93,66 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       message: "Login Successfully",
       statusCode: 200
     });
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+interface IUser {
+  name?: string;
+  email?: string;
+  username?: string;
+  profilePic?: string;
+}
+
+export const updateProfile = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true
+  };
+  const userId = req.params.id;
+  const {
+    username,
+    email,
+    name
+  }: {
+    username: string;
+    email: string;
+    name: string;
+  } = req.body;
+  try {
+    const file = await req.file;
+    const result = await cloudinary.uploader.upload(file.path, options);
+    fs.unlink(file.path, function (err: any) {
+      if (err) throw err;
+    });
+    const user = await findOne(User, { _id: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    let data: Partial<IUser> = {};
+
+    if (name !== undefined) {
+      data.name = name;
+    }
+    if (email !== undefined) {
+      data.email = email;
+    }
+    if (username !== undefined) {
+      data.username = username;
+    }
+    if (file !== undefined) {
+      data.profilePic = result.url;
+    }
+
+    const updatedUser = await updateOne(User, { _id: userId }, data);
+    return res.json({ message: "User updated successfully.", updatedUser });
   } catch (err) {
     return res.status(500).json({
       error: err
