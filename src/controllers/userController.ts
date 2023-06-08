@@ -1,7 +1,11 @@
 import User from "../model/userModel";
 import { Response, Request } from "express";
 import { createData, findOne } from "../utils/databaseService";
-import { generateUniqueAccountNumber } from "../utils/userUtils";
+import {
+  createAccessToken,
+  generateUniqueAccountNumber,
+  loginValidateFields
+} from "../utils/userUtils";
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
@@ -33,6 +37,11 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       userType: number;
       mobileNo: string;
     } = req.body;
+    const file = await req.file;
+    const result = await cloudinary.uploader.upload(file.path, options);
+    fs.unlink(file.path, function (err: any) {
+      if (err) throw err;
+    });
     if (!username || !password || !email || !name || !userType || !mobileNo) {
       return res.status(400).json({ message: "Required fields are missing." });
     }
@@ -40,30 +49,60 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     if (userExists) {
       return res.status(400).json({ message: "User Already Exists." });
     }
-    const file = await req.file;
-    
-    const result = await cloudinary.uploader.upload(file.path, options);
-
     const accountNumber = await generateUniqueAccountNumber();
-    const hashPassword = await bcrypt.hash(password, 10);
-
     const userData = new User({
       accountNumber,
       mobileNo,
       username,
-      password: hashPassword,
+      password,
       email,
       name,
       userType,
       profilePic: result.url
     });
     const userInfo = await createData(User, userData);
-    fs.unlink(file.path, function (err: any) {
-      if (err) throw err;
-    });
     res.send({
       userInfo,
       message: "User created Successfully"
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+export const login = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { password, mobileNo }: { password: string; mobileNo: string } =
+      req.body;
+    const validationError = loginValidateFields(mobileNo, password);
+    if (validationError) {
+      return res
+        .status(400)
+        .json({ message: validationError, statusCode: 400 });
+    }
+    const user = await findOne(User, { mobileNo });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(404)
+        .json({ message: "Password Doesn't Match.", statusCode: 404 });
+    }
+
+    const accessToken = createAccessToken({
+      id: user._id,
+      email: user.email,
+      mobileNo: user.mobileNo,
+      userType: user.userType,
+      accountNumber: user.accountNumber,
+      currentBalance: user.currentBalance
+    });
+
+    res.json({
+      token: accessToken,
+      message: "Login Successfully",
+      statusCode: 200
     });
   } catch (err) {
     return res.status(500).json({

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register } from "../controllers/userController";
+import { register, login } from "../controllers/userController";
 import multer, { Multer } from "multer";
 const upload: Multer = multer({
   dest: "uploads/",
@@ -11,5 +11,6 @@ const upload: Multer = multer({
 const router: Router = Router();
 
 router.post("/register", upload.single("image"), register);
+router.post("/login", login);
 
 export default router;
