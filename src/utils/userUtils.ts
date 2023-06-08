@@ -45,7 +45,7 @@ export const loginValidateFields = (
   password: string
 ): string | null => {
   const mobileNoRegex = /^\d{11}$/;
-  // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const passwordRegex = /^\d{6}$/;
 
   if (!mobileNo) {
     return "Mobile number is required.";
@@ -59,9 +59,9 @@ export const loginValidateFields = (
     return "Invalid mobile number.";
   }
 
-  // if (!passwordRegex.test(password)) {
-  //   return "Invalid password. It should contain at least 8 characters, including at least one letter and one digit.";
-  // }
+  if (!passwordRegex.test(password)) {
+    return "Invalid password. It should contain least 6 digit.";
+  }
 
   return null;
 };
