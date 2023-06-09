@@ -5,10 +5,11 @@ export const JWT_SECRET = {
   };
   
   export const USER_TYPES = {
-    User: 1,
-    Admin: 2,
-    Agent: 3,
-    Marchant: 4
+    Personal: 0,
+    Agent: 1,
+    Marchant: 2,
+    User: 3,
+    Admin: 4
   };
   
   export const PLATFORM = {
