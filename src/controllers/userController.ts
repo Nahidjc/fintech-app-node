@@ -18,24 +18,20 @@ cloudinary.config({
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
     const {
-      username,
       password,
       email,
-      name,
       userType,
       mobileNo
     }: {
-      username: string;
       password: string;
       email: string;
-      name: string;
       userType: number;
       mobileNo: string;
     } = req.body;
-    if (!username || !password || !email || !name || !userType || !mobileNo) {
+    if ( !password || !email || !userType || !mobileNo) {
       return res.status(400).json({ message: "Required fields are missing." });
     }
-    const userExists = await findOne(User, { email, username, mobileNo });
+    const userExists = await findOne(User, { mobileNo });
     if (userExists) {
       return res.status(400).json({ message: "User Already Exists." });
     }
@@ -43,10 +39,8 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     const userData = new User({
       accountNumber,
       mobileNo,
-      username,
       password,
       email,
-      name,
       userType
     });
     const userInfo = await createData(User, userData);
