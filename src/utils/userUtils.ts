@@ -65,3 +65,21 @@ export const loginValidateFields = (
 
   return null;
 };
+
+
+interface formatUser {
+  id?: string;
+  username?: string;
+  email?: string;
+  name?: string;
+  userType?: number;
+  currentBalance?: number;
+  accountNumber?: number;
+  mobileNo?: string;
+  profilePic?: string;
+}
+
+export const  extractSpecificFields = (user: formatUser): Partial<formatUser> =>{
+  const { id, username, email, name, userType, currentBalance, accountNumber, mobileNo, profilePic } = user;
+  return { id, username, email, name, userType, currentBalance, accountNumber, mobileNo, profilePic };
+}
