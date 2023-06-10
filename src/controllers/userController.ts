@@ -73,7 +73,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         .status(404)
         .json({ message: "Password Doesn't Match.", statusCode: 404 });
     }
-
+    const formatUser = extractSpecificFields(user);
     const accessToken = createAccessToken({
       id: user._id,
       email: user.email,
@@ -84,6 +84,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     });
 
     res.json({
+      user: formatUser,
       token: accessToken,
       message: "Login Successfully",
       statusCode: 200
