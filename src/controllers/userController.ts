@@ -3,6 +3,7 @@ import { Response, Request } from "express";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 import {
   createAccessToken,
+  extractSpecificFields,
   generateUniqueAccountNumber,
   loginValidateFields
 } from "../utils/userUtils";
@@ -147,6 +148,22 @@ export const updateProfile = async (
 
     const updatedUser = await updateOne(User, { _id: userId }, data);
     return res.json({ message: "User updated successfully.", updatedUser });
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+export const getUserbyId = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const userId = req.params.id;
+  try {        
+    const user = await findOne(User, { _id: userId });
+    const formatUser = extractSpecificFields(user);
+    return res.json({ message: "User get successfully.", user: formatUser });
   } catch (err) {
     return res.status(500).json({
       error: err
