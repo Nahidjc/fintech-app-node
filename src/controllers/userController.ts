@@ -1,4 +1,5 @@
 import User from "../model/userModel";
+import sharp from 'sharp';
 import { Response, Request } from "express";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 import {
@@ -7,6 +8,7 @@ import {
   generateUniqueAccountNumber,
   loginValidateFields
 } from "../utils/userUtils";
+import { USER_TYPES } from "../constants/authConstant";
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
@@ -126,12 +128,26 @@ export const updateProfile = async (
     let result: { url?: string } = {};
     if (req.file) {
       const file = req.file;
-      result = await cloudinary.uploader.upload(file.path, options);
+      const image = sharp(file.path);
+      const metadata = await image.metadata();
+      const format = metadata.format;
+      const compressedImageBuffer = await image
+        .resize(200, 200) 
+        .jpeg({ quality: 80 }) 
+        .png({ compressionLevel: 6 })
+        .webp({ quality: 80 }) 
+        .toBuffer();
+
+      result = await cloudinary.uploader.upload(
+        compressedImageBuffer,
+        { ...options, format: format }
+      );
+
       fs.unlink(file.path, function (err: any) {
         if (err) throw err;
       });
     }
-    
+
     const user = await findOne(User, { _id: userId });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -160,6 +176,7 @@ export const updateProfile = async (
   }
 };
 
+
 export const getUserbyId = async (
   req: Request,
   res: Response
@@ -169,6 +186,27 @@ export const getUserbyId = async (
     const user = await findOne(User, { _id: userId });
     const formatUser = extractSpecificFields(user);
     return res.json({ message: "User get successfully.", user: formatUser });
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+export const validatePersonalAccount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountnumber } = req.headers;
+    const accountDetails = await findOne(User, {
+      mobileNo: accountnumber
+    });
+    if (accountDetails.userType === USER_TYPES.Personal) {
+      return res.json({ validate: true });
+    } else {
+      return res.json({ validate: false });
+    }
   } catch (err) {
     return res.status(500).json({
       error: err
