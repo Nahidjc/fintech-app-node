@@ -123,11 +123,15 @@ export const updateProfile = async (
     name: string;
   } = req.body;
   try {
-    const file = await req.file;
-    const result = await cloudinary.uploader.upload(file.path, options);
-    fs.unlink(file.path, function (err: any) {
-      if (err) throw err;
-    });
+    let result: { url?: string } = {};
+    if (req.file) {
+      const file = req.file;
+      result = await cloudinary.uploader.upload(file.path, options);
+      fs.unlink(file.path, function (err: any) {
+        if (err) throw err;
+      });
+    }
+    
     const user = await findOne(User, { _id: userId });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -143,7 +147,7 @@ export const updateProfile = async (
     if (username !== undefined) {
       data.username = username;
     }
-    if (file !== undefined) {
+    if (result.url) {
       data.profilePic = result.url;
     }
 
