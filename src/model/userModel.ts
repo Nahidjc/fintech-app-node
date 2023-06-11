@@ -57,7 +57,8 @@ const schema: Schema<IUser> = new Schema<IUser>(
       max: 9999999,
       required: false,
       default: 0,
-      unique: false
+      unique: false,
+      get: (value: number) => Number(value.toFixed(2)) // convert to Double
     },
     accountNumber: {
       type: Number,
