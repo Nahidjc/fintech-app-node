@@ -1,5 +1,4 @@
 import User from "../model/userModel";
-import sharp from 'sharp';
 import { Response, Request } from "express";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 import {
@@ -128,26 +127,12 @@ export const updateProfile = async (
     let result: { url?: string } = {};
     if (req.file) {
       const file = req.file;
-      const image = sharp(file.path);
-      const metadata = await image.metadata();
-      const format = metadata.format;
-      const compressedImageBuffer = await image
-        .resize(200, 200) 
-        .jpeg({ quality: 80 }) 
-        .png({ compressionLevel: 6 })
-        .webp({ quality: 80 }) 
-        .toBuffer();
-
-      result = await cloudinary.uploader.upload(
-        compressedImageBuffer,
-        { ...options, format: format }
-      );
-
+      result = await cloudinary.uploader.upload(file.path, options);
       fs.unlink(file.path, function (err: any) {
         if (err) throw err;
       });
     }
-
+    
     const user = await findOne(User, { _id: userId });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
