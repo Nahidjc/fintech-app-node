@@ -198,3 +198,24 @@ export const validatePersonalAccount = async (
     });
   }
 };
+
+export const validateAgentAccount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountnumber } = req.headers;
+    const accountDetails = await findOne(User, {
+      mobileNo: accountnumber
+    });
+    if (accountDetails.userType === USER_TYPES.Agent) {
+      return res.json({ validate: true });
+    } else {
+      return res.json({ validate: false });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
