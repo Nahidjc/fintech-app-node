@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, updateProfile, getUserbyId, validatePersonalAccount, validateAgentAccount, validateMarchantAccount  } from "../controllers/userController";
+import { register, login, updateProfile, getUserbyId, validatePersonalAccount, validateAgentAccount, validateMarchantAccount, validatePassword  } from "../controllers/userController";
 import multer, { Multer } from "multer";
 const upload: Multer = multer({
   dest: "uploads/",
@@ -17,5 +17,6 @@ router.get("/user/:id", getUserbyId);
 router.get("/validate/personal", validatePersonalAccount);
 router.get("/validate/agent", validateAgentAccount);
 router.get("/validate/marchant", validateMarchantAccount);
+router.post("/validate/password", validatePassword);
 
 export default router;
