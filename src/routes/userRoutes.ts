@@ -17,6 +17,6 @@ router.get("/user/:id", getUserbyId);
 router.get("/validate/personal", validatePersonalAccount);
 router.get("/validate/agent", validateAgentAccount);
 router.get("/validate/marchant", validateMarchantAccount);
-router.get("/validate/password", validatePassword);
+router.post("/validate/password", validatePassword);
 
 export default router;
