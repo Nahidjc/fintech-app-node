@@ -198,3 +198,69 @@ export const validatePersonalAccount = async (
     });
   }
 };
+
+export const validateAgentAccount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountnumber } = req.headers;
+    const accountDetails = await findOne(User, {
+      mobileNo: accountnumber
+    });
+    if (accountDetails.userType === USER_TYPES.Agent) {
+      return res.json({ validate: true });
+    } else {
+      return res.json({ validate: false });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+export const validateMarchantAccount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountnumber } = req.headers;
+    const accountDetails = await findOne(User, {
+      mobileNo: accountnumber
+    });
+    if (accountDetails.userType === USER_TYPES.Marchant) {
+      return res.json({ validate: true });
+    } else {
+      return res.json({ validate: false });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
+
+export const validatePassword = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountnumber, password } = req.body;
+    const accountDetails = await findOne(User, {
+      mobileNo: accountnumber
+    });
+    const isValid = await bcrypt.compare(password, accountDetails.password);
+    if (isValid) {
+      return res.status(200).json({ isValid, message: "Password are valid" });
+    } else {
+      return res
+        .status(400)
+        .json({ isValid, message: "Password are not valid" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "An error occurred during password validation" });
+  }
+};
