@@ -95,3 +95,37 @@ export const createCashoutPayment = async (
     });
   }
 };
+
+export const expensesController = async (req: Request, res: Response) => {
+  const { accountnumber } = req.headers;
+  try {
+    if (!accountnumber) {
+      return res.status(400).json({ messae: "Account number is required" });
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const result = await TransactionModel.aggregate([
+      {
+        $match: {
+          senderAccount: accountnumber.toString(),
+          createdAt: {
+            $gte: today
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: {
+            $sum: "$amount"
+          }
+        }
+      }
+    ]);
+    const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+    return res.status(200).json({ totalAmount , message: 'Successfully fetched your today expense' });
+  } catch (err) {
+    return res.status(500).json({ message: 'An error occurred' });
+  }
+};
