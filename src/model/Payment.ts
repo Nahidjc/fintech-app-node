@@ -97,26 +97,48 @@ const TransactionModel = mongoose.model<ITransaction>(
 export const calculateUserExpenses = async (accountnumber: string) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const result = await TransactionModel.aggregate([
+  const expenditureResult = await TransactionModel.aggregate([
     {
       $match: {
         senderAccount: accountnumber,
         createdAt: {
-          $gte: today,
-        },
-      },
+          $gte: today
+        }
+      }
     },
     {
       $group: {
         _id: null,
-        totalAmount: {
-          $sum: '$amount',
-        },
-      },
-    },
+        totalExpenditure: {
+          $sum: "$amount"
+        }
+      }
+    }
   ]);
 
-  return result;
+  const depositResult = await TransactionModel.aggregate([
+    {
+      $match: {
+        receiverAccount: accountnumber,
+        createdAt: {
+          $gte: today
+        }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalDeposit: {
+          $sum: "$amount"
+        }
+      }
+    }
+  ]);
+
+  const expenditureAmount = expenditureResult[0]?.totalExpenditure || 0;
+  const depositAmount = depositResult[0]?.totalDeposit || 0;
+
+  return [expenditureAmount, depositAmount];
 };
 
 export default TransactionModel;

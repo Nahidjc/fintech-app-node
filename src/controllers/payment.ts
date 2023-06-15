@@ -102,12 +102,13 @@ export const expensesController = async (req: Request, res: Response) => {
     if (!accountnumber) {
       return res.status(400).json({ messae: "Account number is required" });
     }
-    const result = await calculateUserExpenses(accountnumber.toString());
-    const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+    const  [expenditureAmount, depositAmount] = await calculateUserExpenses(accountnumber.toString());
+
     return res
       .status(200)
       .json({
-        totalAmount,
+        expenditureAmount,
+        depositAmount,
         message: "Successfully fetched your today expense"
       });
   } catch (err) {
