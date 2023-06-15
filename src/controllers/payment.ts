@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { transactionTypes, USER_TYPES } from "../constants/authConstant";
-import TransactionModel from "../model/Payment";
+import TransactionModel, { calculateUserExpenses } from "../model/Payment";
 import User from "../model/userModel";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 const bcrypt = require("bcrypt");
@@ -93,5 +93,25 @@ export const createCashoutPayment = async (
     return res.status(500).json({
       error: err
     });
+  }
+};
+
+export const expensesController = async (req: Request, res: Response) => {
+  const { accountnumber } = req.headers;
+  try {
+    if (!accountnumber) {
+      return res.status(400).json({ messae: "Account number is required" });
+    }
+    const  [expenditureAmount, depositAmount] = await calculateUserExpenses(accountnumber.toString());
+
+    return res
+      .status(200)
+      .json({
+        expenditureAmount,
+        depositAmount,
+        message: "Successfully fetched your today expense"
+      });
+  } catch (err) {
+    return res.status(500).json({ message: "An error occurred" });
   }
 };
