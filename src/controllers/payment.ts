@@ -9,7 +9,7 @@ const calculateExpense = (amount: number): [number, number] => {
   const feePercentage = 0.0099;
   const fee = amount * feePercentage;
   const totalAmount = amount + fee;
-  return [totalAmount, fee];
+  return [parseFloat(totalAmount.toFixed(2)), parseFloat(fee.toFixed(2))];
 };
 
 interface UserDetails {
