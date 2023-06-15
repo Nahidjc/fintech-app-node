@@ -94,4 +94,29 @@ const TransactionModel = mongoose.model<ITransaction>(
   transactionSchema
 );
 
+export const calculateUserExpenses = async (accountnumber: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const result = await TransactionModel.aggregate([
+    {
+      $match: {
+        senderAccount: accountnumber,
+        createdAt: {
+          $gte: today,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: {
+          $sum: '$amount',
+        },
+      },
+    },
+  ]);
+
+  return result;
+};
+
 export default TransactionModel;

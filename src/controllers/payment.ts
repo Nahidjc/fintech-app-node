@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { transactionTypes, USER_TYPES } from "../constants/authConstant";
-import TransactionModel from "../model/Payment";
+import TransactionModel, { calculateUserExpenses } from "../model/Payment";
 import User from "../model/userModel";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 const bcrypt = require("bcrypt");
@@ -102,30 +102,15 @@ export const expensesController = async (req: Request, res: Response) => {
     if (!accountnumber) {
       return res.status(400).json({ messae: "Account number is required" });
     }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const result = await TransactionModel.aggregate([
-      {
-        $match: {
-          senderAccount: accountnumber.toString(),
-          createdAt: {
-            $gte: today
-          }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalAmount: {
-            $sum: "$amount"
-          }
-        }
-      }
-    ]);
+    const result = await calculateUserExpenses(accountnumber.toString());
     const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
-    return res.status(200).json({ totalAmount , message: 'Successfully fetched your today expense' });
+    return res
+      .status(200)
+      .json({
+        totalAmount,
+        message: "Successfully fetched your today expense"
+      });
   } catch (err) {
-    return res.status(500).json({ message: 'An error occurred' });
+    return res.status(500).json({ message: "An error occurred" });
   }
 };
