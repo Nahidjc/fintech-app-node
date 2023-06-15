@@ -141,4 +141,14 @@ export const calculateUserExpenses = async (accountnumber: string) => {
   return [expenditureAmount, depositAmount];
 };
 
+export const getUserTransactionHistory = async (accountNumber: string) => {
+    const transactions = await TransactionModel.find({
+      $or: [
+        { senderAccount: accountNumber },
+        { receiverAccount: accountNumber },
+      ],
+    });
+    return transactions;
+};
+
 export default TransactionModel;

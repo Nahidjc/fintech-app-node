@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { transactionTypes, USER_TYPES } from "../constants/authConstant";
-import TransactionModel, { calculateUserExpenses } from "../model/Payment";
+import TransactionModel, { calculateUserExpenses, getUserTransactionHistory } from "../model/Payment";
 import User from "../model/userModel";
 import { createData, findOne, updateOne } from "../utils/databaseService";
 const bcrypt = require("bcrypt");
@@ -113,5 +113,15 @@ export const expensesController = async (req: Request, res: Response) => {
       });
   } catch (err) {
     return res.status(500).json({ message: "An error occurred" });
+  }
+};
+
+export const getUserTransactions  = async (req: Request, res: Response) => {
+  const { accountnumber } = req.headers;
+  try{
+    const transactions = await getUserTransactionHistory(accountnumber.toString());
+    res.status(200).json({ transactions, message: "Your transactions fetched successfully" });
+  }catch (err) {
+    return res.status(500).json({ message: "Failed to fetched Transactions" });
   }
 };
