@@ -144,7 +144,7 @@ export const calculateUserExpenses = async (accountnumber: string) => {
   const expenditureAmount = expenditureResult[0]?.totalExpenditure || 0;
   const depositAmount = depositResult[0]?.totalDeposit || 0;
 
-  return [expenditureAmount, depositAmount];
+  return [parseFloat(expenditureAmount.toFixed(2)), parseFloat(depositAmount.toFixed(2))];
 };
 
 export const getUserTransactionHistory = async (accountNumber: string) => {
