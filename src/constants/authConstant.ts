@@ -34,10 +34,10 @@ export const FORGOT_PASSWORD_WITH = {
 };
 
 export const transactionTypes = {
-  cashOut: "Cash Out",
-  payment: "Payment",
-  sendMoney: "Send Money",
-  cashIn: "Cash In",
-  addMoney: "Add Money",
-  recharge: "Mobile Recharge"
+  CASH_OUT: "Cash Out",
+  PAYMENT: "Payment",
+  SEND_MONEY: "Send Money",
+  CASH_IN: "Cash In",
+  ADD_MONEY: "Add Money",
+  RECHARGE: "Mobile Recharge"
 };

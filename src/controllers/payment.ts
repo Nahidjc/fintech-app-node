@@ -36,6 +36,8 @@ interface Transaction {
   amount: number;
   fee: number;
   transactionType: string;
+  receiverName?: string;
+  senderName?: string;
 }
 
 const createTransactionHistory = (
@@ -43,14 +45,18 @@ const createTransactionHistory = (
   senderAccount: string,
   amount: number,
   fee: number,
-  transactionType: string
+  transactionType: string,
+  receiverName?: string,
+  senderName?: string
 ): Transaction => {
   return {
     receiverAccount,
     senderAccount,
     amount,
     fee,
-    transactionType
+    transactionType,
+    receiverName,
+    senderName
   };
 };
 
@@ -83,7 +89,9 @@ export const createCashoutPayment = async (
       userDetails.mobileNo,
       amount,
       fee,
-      transactionTypes.cashOut
+      transactionTypes.CASH_OUT,
+      receiverDetails.name,
+      userDetails.name
     );
     await createData(TransactionModel, transaction);
     res
