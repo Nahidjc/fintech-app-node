@@ -39,5 +39,6 @@ export const transactionTypes = {
   SEND_MONEY: "Send Money",
   CASH_IN: "Cash In",
   ADD_MONEY: "Add Money",
-  RECHARGE: "Mobile Recharge"
+  RECHARGE: "Mobile Recharge",
+  RECEIVE_MONEY: "Receive Money"
 };
