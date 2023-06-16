@@ -137,3 +137,49 @@ export const getUserTransactions  = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Failed to fetched Transactions" });
   }
 };
+
+export const createSendMoneyPayment = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { accountNumber, password, receiverNumber, amount } = req.body;
+    const userDetails = await findOne(User, {
+      mobileNo: accountNumber
+    });
+    const isMatch = await bcrypt.compare(password, userDetails.password);
+    if (userDetails.userType !== USER_TYPES.Personal && userDetails.userType !== USER_TYPES.Agent) {
+      return res.status(400).json({ message: "Your Account not valid for Send Money" });
+    }
+    const receiverDetails = await findOne(User, {
+      mobileNo: receiverNumber
+    });
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "Invalid password. Please try again." });
+    }
+    const fee = userDetails.userType !== USER_TYPES.Agent ? (amount > 1000 ? 5 : 0) : 0;
+    const totalAmount = amount + fee;
+    await updateCurrentBalance(userDetails, totalAmount, false);
+    await updateCurrentBalance(receiverDetails, amount, true);
+    const transaction = createTransactionHistory(
+      receiverDetails.mobileNo,
+      userDetails.mobileNo,
+      amount,
+      fee,
+      transactionTypes.SEND_MONEY,
+      transactionTypes.CASH_IN,
+      receiverDetails.name,
+      userDetails.name
+    );
+    await createData(TransactionModel, transaction);
+    res
+      .status(200)
+      .json({ message: "Congratulations! Your transaction was successful." });
+  } catch (err) {
+    return res.status(500).json({
+      error: err
+    });
+  }
+};
