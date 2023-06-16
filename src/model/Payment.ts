@@ -18,7 +18,8 @@ interface ITransaction extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   isDeleted?: boolean;
-  transactionType?: string;
+  senderTransactionType?: string;
+  receiverTransactionType?: string;
   amount: number;
   senderAccount: string;
   receiverAccount: string;
@@ -30,7 +31,8 @@ const transactionSchema = new Schema<ITransaction>(
     createdAt: { type: Date },
     updatedAt: { type: Date },
     isDeleted: { type: Boolean },
-    transactionType: { type: String, required: true },
+    senderTransactionType: { type: String, required: true },
+    receiverTransactionType: { type: String, required: true },
     amount: {
       min: 10,
       max: 99999,
@@ -110,7 +112,7 @@ export const calculateUserExpenses = async (accountnumber: string) => {
       $group: {
         _id: null,
         totalExpenditure: {
-          $sum: "$amount"
+          $sum: { $add: ["$amount", "$fee"] }
         }
       }
     }
