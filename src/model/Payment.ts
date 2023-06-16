@@ -23,6 +23,8 @@ interface ITransaction extends Document {
   amount: number;
   senderAccount: string;
   receiverAccount: string;
+  receiverName?: string;
+  senderName?: string;
   fee: Number;
 }
 
@@ -33,6 +35,8 @@ const transactionSchema = new Schema<ITransaction>(
     isDeleted: { type: Boolean },
     senderTransactionType: { type: String, required: true },
     receiverTransactionType: { type: String, required: true },
+    senderName: { type: String },
+    receiverName: { type: String },
     amount: {
       min: 10,
       max: 99999,
@@ -140,7 +144,7 @@ export const calculateUserExpenses = async (accountnumber: string) => {
   const expenditureAmount = expenditureResult[0]?.totalExpenditure || 0;
   const depositAmount = depositResult[0]?.totalDeposit || 0;
 
-  return [expenditureAmount, depositAmount];
+  return [parseFloat(expenditureAmount.toFixed(2)), parseFloat(depositAmount.toFixed(2))];
 };
 
 export const getUserTransactionHistory = async (accountNumber: string) => {
