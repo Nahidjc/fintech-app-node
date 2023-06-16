@@ -23,6 +23,8 @@ interface ITransaction extends Document {
   amount: number;
   senderAccount: string;
   receiverAccount: string;
+  receiverName?: string;
+  senderName?: string;
   fee: Number;
 }
 
@@ -33,6 +35,8 @@ const transactionSchema = new Schema<ITransaction>(
     isDeleted: { type: Boolean },
     senderTransactionType: { type: String, required: true },
     receiverTransactionType: { type: String, required: true },
+    senderName: { type: String },
+    receiverName: { type: String },
     amount: {
       min: 10,
       max: 99999,
