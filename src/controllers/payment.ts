@@ -20,7 +20,7 @@ interface UserDetails {
   currentBalance: number;
 }
 
-const updateCurrentBalance = async (
+export const updateCurrentBalance = async (
   userDetails: UserDetails,
   amount: number,
   isAddition: boolean
@@ -44,7 +44,7 @@ interface Transaction {
   senderName?: string;
 }
 
-const createTransactionHistory = (
+export const createTransactionHistory = (
   receiverAccount: string,
   senderAccount: string,
   amount: number,
