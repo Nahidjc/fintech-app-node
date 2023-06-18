@@ -1,6 +1,7 @@
 const mongoosePaginate = require("mongoose-paginate-v2");
 let idValidator = require("mongoose-id-validator");
 import mongoose, { Document, Schema } from "mongoose";
+import { transactionTypes } from "../constants/authConstant";
 const myCustomLabels = {
   totalDocs: "itemCount",
   docs: "data",
@@ -109,7 +110,8 @@ export const calculateUserExpenses = async (accountnumber: string) => {
         senderAccount: accountnumber,
         createdAt: {
           $gte: today
-        }
+        },
+        senderTransactionType: { $ne: transactionTypes.REFERRAL_BONUS } 
       }
     },
     {

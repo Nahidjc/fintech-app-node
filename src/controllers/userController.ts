@@ -7,7 +7,9 @@ import {
   generateUniqueAccountNumber,
   loginValidateFields
 } from "../utils/userUtils";
-import { USER_TYPES } from "../constants/authConstant";
+import { USER_TYPES, transactionTypes } from "../constants/authConstant";
+import { createTransactionHistory, updateCurrentBalance } from "./payment";
+import TransactionModel from "../model/Payment";
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
@@ -18,18 +20,38 @@ cloudinary.config({
 });
 
 export const register = async (req: Request, res: Response): Promise<any> => {
+  
   try {
     const {
       password,
       email,
       userType,
-      mobileNo
+      mobileNo,
+      referralNo
     }: {
       password: string;
       email: string;
       userType: number;
       mobileNo: string;
+      referralNo: string;
     } = req.body;
+    if(referralNo){
+      const referrar = await findOne(User, { mobileNo: referralNo });
+      if(referrar){
+        await updateCurrentBalance(referrar, 50, true);
+        const transaction = createTransactionHistory(
+          referralNo,
+          mobileNo,
+          50,
+          0,
+          transactionTypes.REFERRAL_BONUS,
+          transactionTypes.REFERRAL_BONUS,
+          referrar.name,
+          mobileNo
+        );
+        await createData(TransactionModel, transaction);
+      }
+    }
     if ( !password || !email || !userType || !mobileNo) {
       return res.status(400).json({ message: "Required fields are missing." });
     }

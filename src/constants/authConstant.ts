@@ -40,5 +40,6 @@ export const transactionTypes = {
   CASH_IN: "Cash In",
   ADD_MONEY: "Add Money",
   RECHARGE: "Mobile Recharge",
-  RECEIVE_MONEY: "Receive Money"
+  RECEIVE_MONEY: "Receive Money",
+  REFERRAL_BONUS: "Referral Bonus"
 };
