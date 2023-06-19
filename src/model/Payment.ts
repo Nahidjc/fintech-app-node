@@ -103,7 +103,8 @@ const TransactionModel = mongoose.model<ITransaction>(
 
 export const calculateUserExpenses = async (accountnumber: string) => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(today.getUTCHours() + 6);
+  today.setUTCHours(0, 0, 0, 0);
   const expenditureResult = await TransactionModel.aggregate([
     {
       $match: {
