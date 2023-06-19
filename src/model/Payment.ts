@@ -111,7 +111,7 @@ export const calculateUserExpenses = async (accountnumber: string) => {
         createdAt: {
           $gte: today
         },
-        senderTransactionType: { $ne: transactionTypes.REFERRAL_BONUS } 
+        senderTransactionType: { $ne: transactionTypes.REFERRAL_BONUS }
       }
     },
     {
@@ -146,20 +146,26 @@ export const calculateUserExpenses = async (accountnumber: string) => {
   const expenditureAmount = expenditureResult[0]?.totalExpenditure || 0;
   const depositAmount = depositResult[0]?.totalDeposit || 0;
 
-  return [parseFloat(expenditureAmount.toFixed(2)), parseFloat(depositAmount.toFixed(2))];
+  return [
+    parseFloat(expenditureAmount.toFixed(2)),
+    parseFloat(depositAmount.toFixed(2))
+  ];
 };
 
 export const getUserTransactionHistory = async (accountNumber: string) => {
   const transactions = await TransactionModel.find({
     $or: [
-      { senderAccount: accountNumber },
-      { receiverAccount: accountNumber },
-    ],
+      {
+        senderAccount: accountNumber,
+        senderTransactionType: { $ne: "Referral Bonus" }
+      },
+      { receiverAccount: accountNumber }
+    ]
   })
     .sort({ createdAt: -1 })
     .limit(10);
+
   return transactions;
 };
-
 
 export default TransactionModel;
