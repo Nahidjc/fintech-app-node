@@ -164,7 +164,7 @@ export const getUserTransactionHistory = async (accountNumber: string) => {
     ]
   })
     .sort({ createdAt: -1 })
-    .limit(10);
+    .limit(20);
 
   return transactions;
 };
