@@ -5,14 +5,15 @@ phases:
     runtime-versions:
       nodejs: latest
     commands:
-      - npm install
+      - npm install -g yarn typescript
+      - yarn install
   build:
     commands:
-      - npm run build
+      - yarn build
 
 artifacts:
   files:
+    - yarn.lock
     - package.json
-    - package-lock.json
     - 'build/**/*'
-  discard-paths: yes
+  discard-paths: no
