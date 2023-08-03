@@ -4,9 +4,9 @@
   "description": "",
   "main": "build/app.js",
   "scripts": {
-    "start": "node ./build/app.js",
-    "dev": "nodemon  ./src/app.ts",
-    "build": "tsc",
+    "start": "node build/app.js",
+    "dev": "nodemon  src/app.ts",
+    "build": "tsc -p .",
     "test": "jest --detectOpenHandles",
     "test:cover": "jest --coverage"
   },
